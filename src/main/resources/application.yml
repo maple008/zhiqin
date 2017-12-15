@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: zhiqin-module-srv
+server:
+  port: 8686
+database:
+  url: jdbc:mysql://rm-2ze6wy17zh2pgmp7oo.mysql.rds.aliyuncs.com:3306/zhiqinweike?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8&readFromMasterWhenNoSlaves=false&allowMasterDownConnections=true&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false
+  dialect: org.hibernate.dialect.MySQLDialect
+  driver: com.mysql.cj.jdbc.Driver
+  user: zhiqinweike
+  password: Zhiqinweike-2017
+  maxPoolPreparedStatementPer: 20
