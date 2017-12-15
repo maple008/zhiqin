@@ -10,3 +10,5 @@ database:
   user: zhiqinweike
   password: Zhiqinweike-2017
   maxPoolPreparedStatementPer: 20
+files:
+  diskPath: /root/apache-tomcat-7.0.82/webapps/upload
