@@ -1,5 +1,7 @@
 package com.zhiqin.module.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zhiqin.module.dto.CommentUserVoDTO;
 import com.zhiqin.module.dto.MessageVoDTO;
@@ -32,20 +34,29 @@ public class MessageController {
      * @return
      */
     @PostMapping("/addMessage")
-    public RespBase<String> addMessage(MessageVoDTO messageVoDTO, @RequestParam(value = "img", required = false) MultipartFile[] file) {
-        List list = new ArrayList();
-        if (file.length>0&&file[0].getSize() > 0) {
-            list = fileLoad.getImgFile(file, "customer");
+    public RespBase<String> addMessage(@RequestBody  MessageVoDTO messageVoDTO) {
+//        , @RequestParam(value = "img", required = false) MultipartFile[] file
+//        List list = new ArrayList();s
+//        if (file.length>0&&file[0].getSize() > 0) {
+//            list = fileLoad.getImgFile(file, "customer");
+//        }
+//        JSONObject jsonObject = new JSONObject();
+//        if (list.size() == 1) {
+//            jsonObject.put("path", list.get(0).toString());
+//        } else if (list.size() > 1) {
+//            jsonObject.put("path", list);
+//        }
+//        if (jsonObject.size() > 0) {
+//            messageVoDTO.setPhoto(jsonObject.getString("path"));
+//        }
+        JSONArray jsonArray = JSON.parseArray(messageVoDTO.getPhoto());
+        JSONArray jsonArray1 = new JSONArray();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            String imgName = fileLoad.GenerateImage(jsonArray.getString(i), "customer");
+            jsonArray1.add(imgName);
         }
-        JSONObject jsonObject = new JSONObject();
-        if (list.size() == 1) {
-            jsonObject.put("path", list.get(0).toString());
-        } else if (list.size() > 1) {
-            jsonObject.put("path", list);
-        }
-        if (jsonObject.size() > 0) {
-            messageVoDTO.setPhoto(jsonObject.getString("path"));
-        }
+        //存入图片
+        messageVoDTO.setPhoto(jsonArray1.toString());
         return messageService.addMessage(messageVoDTO);
     }
 

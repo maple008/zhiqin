@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 文件上传
@@ -100,5 +101,50 @@ public class FileLoad {
             }
         }
         return strPhotos;
+    }
+
+
+    /**
+     * 将接收到的base64转为图片
+     * *@author Maple
+     */
+    // base64字符串转化成图片
+    public String GenerateImage(String imgStr, String tables) { // 对字节数组字符串进行Base64解码并生成图片
+        if (imgStr == null) // 图像数据为空
+            return "";
+        BASE64Decoder decoder = new BASE64Decoder();
+        try {
+            // Base64解码
+            byte[] b = decoder.decodeBuffer(imgStr);
+            for (int i = 0; i < b.length; ++i) {
+                if (b[i] < 0) {// 调整异常数据
+                    b[i] += 256;
+                }
+            }
+            String imgPath = System.currentTimeMillis() + RandomCode.random() + ".jpg";//图片名称
+            String strPath = "";
+            switch (tables) {
+                case "customer":
+                    strPath = diskPath + File.separator;//生成一个保存路径
+                    break;
+
+                default:
+                    break;
+            }
+            File file = new File(strPath);
+            //如果文件夹不存在则创建
+            if (!file.exists() && !file.isDirectory()) {
+                System.out.println("//不存在");
+                file.mkdir();
+            }
+            String imgFilePath = strPath + imgPath;// 新生成的图片
+            OutputStream out = new FileOutputStream(imgFilePath);
+            out.write(b);
+            out.flush();
+            out.close();
+            return imgPath;
+        } catch (Exception e) {
+            return "";
+        }
     }
 }
