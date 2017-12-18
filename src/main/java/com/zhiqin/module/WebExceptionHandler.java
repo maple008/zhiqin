@@ -1,6 +1,7 @@
 
 package com.zhiqin.module;
 
+import com.zhiqin.module.utils.RespBase;
 import com.zhiqin.module.utils.VaildatMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,23 @@ public class WebExceptionHandler {
             String msg = msgSource.getMessage(error.getDefaultMessage(), null, LocaleContextHolder.getLocale());
             message = new VaildatMsg(-1, msg);
         }
+        return message;
+    }
+
+    /**
+     * 错误
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public RespBase<Object> processExceptionError(Exception ex) {
+        ex.printStackTrace();
+        RespBase<Object> message = new RespBase<Object>();
+        message.setErrorCode(-1);
+        message.setResult(null);
+        message.setErrorMsg(ex.getMessage());
         return message;
     }
 }

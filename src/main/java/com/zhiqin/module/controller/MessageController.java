@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zhiqin.module.dto.CommentUserVoDTO;
 import com.zhiqin.module.dto.MessageVoDTO;
+import com.zhiqin.module.dto.PraiseInfoDTO;
 import com.zhiqin.module.service.MessageService;
 import com.zhiqin.module.utils.FileLoad;
 import com.zhiqin.module.utils.RespBase;
@@ -34,7 +35,7 @@ public class MessageController {
      * @return
      */
     @PostMapping("/addMessage")
-    public RespBase<String> addMessage(@RequestBody  MessageVoDTO messageVoDTO) {
+    public RespBase<String> addMessage(@RequestBody MessageVoDTO messageVoDTO) {
 //        , @RequestParam(value = "img", required = false) MultipartFile[] file
 //        List list = new ArrayList();s
 //        if (file.length>0&&file[0].getSize() > 0) {
@@ -49,14 +50,20 @@ public class MessageController {
 //        if (jsonObject.size() > 0) {
 //            messageVoDTO.setPhoto(jsonObject.getString("path"));
 //        }
-        JSONArray jsonArray = JSON.parseArray(messageVoDTO.getPhoto());
         JSONArray jsonArray1 = new JSONArray();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            String imgName = fileLoad.GenerateImage(jsonArray.getString(i), "customer");
-            jsonArray1.add(imgName);
+        String img[] = messageVoDTO.getPhoto().split(",");
+        String imgs = "";
+        for (int i = 0; i < img.length; i++) {
+            String imgName = fileLoad.GenerateImage(img[i], "customer");
+//            jsonArray1.add(imgName);
+            if (i == 0) {
+                imgs = imgName;
+            } else {
+                imgs += "," + imgName;
+            }
         }
         //存入图片
-        messageVoDTO.setPhoto(jsonArray1.toString());
+        messageVoDTO.setPhoto(imgs);
         return messageService.addMessage(messageVoDTO);
     }
 
@@ -79,6 +86,16 @@ public class MessageController {
     @PostMapping("/ListMessage")
     public RespBase<List<MessageVoDTO>> ListMessage(@RequestBody MessageVoDTO vo) {
         return messageService.ListMessage(vo);
+    }
+
+    /**
+     * 点赞
+     *
+     * @return
+     */
+    @PostMapping("/addPraise")
+    public RespBase<String> addPraise(@RequestBody PraiseInfoDTO praiseInfoDTO) {
+        return messageService.addPraise(praiseInfoDTO);
     }
 
 

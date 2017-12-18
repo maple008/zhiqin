@@ -2,13 +2,12 @@ package com.zhiqin.module.service;
 
 import com.zhiqin.module.dto.CommentUserVoDTO;
 import com.zhiqin.module.dto.MessageVoDTO;
+import com.zhiqin.module.dto.PraiseInfoDTO;
 import com.zhiqin.module.sql.entity.CommentUserVo;
 import com.zhiqin.module.sql.entity.MessageVo;
+import com.zhiqin.module.sql.entity.PraiseInfo;
 import com.zhiqin.module.sql.entity.UserInfo;
-import com.zhiqin.module.sql.repository.CommentUserRepository;
-import com.zhiqin.module.sql.repository.CommentVoRepository;
-import com.zhiqin.module.sql.repository.MessageRepository;
-import com.zhiqin.module.sql.repository.UserInfoRepository;
+import com.zhiqin.module.sql.repository.*;
 import com.zhiqin.module.utils.BeanCopyUtils;
 import com.zhiqin.module.utils.PageModel;
 import com.zhiqin.module.utils.RespBase;
@@ -36,6 +35,8 @@ public class MessageService {
     private MessageRepository messageRepository;
     @Autowired
     private UserInfoRepository userInfoRepository;
+    @Autowired
+    private PraiseInfoRepository praiseInfoRepository;
 
     /**
      * 发表说说
@@ -62,6 +63,10 @@ public class MessageService {
     public RespBase<String> addCommentUser(CommentUserVoDTO commentUserVoDTO) {
         RespBase<String> respBase = new RespBase<>();
         CommentUserVo vo = new CommentUserVo();
+        List<CommentUserVo> commentUserVoList = commentUserRepository.findAllByUserIdAndMsgId(commentUserVoDTO.getUserId(), commentUserVoDTO.getMsgId());
+        if (commentUserVoList.size() > 0) {
+            throw new RuntimeException("请不要重复评论！");
+        }
         BeanCopyUtils.copyProperties(commentUserVoDTO, vo);
         UserInfo userInfo = userInfoRepository.findOne(commentUserVoDTO.getUserId());
         if (Objects.isNull(userInfo)) {
@@ -98,6 +103,7 @@ public class MessageService {
             MessageVoDTO voDTO = new MessageVoDTO();
             BeanCopyUtils.copyProperties(vo, voDTO);
             List<CommentUserVo> commentUserVoList = commentUserRepository.findAllByMsgId(voDTO.getId());
+            List<PraiseInfo> praiseInfoList = praiseInfoRepository.findAllByMsgId(voDTO.getId());
             List<CommentUserVoDTO> commentUserVoDTOList = new ArrayList<>();
             for (CommentUserVo vo1 : commentUserVoList) {
                 CommentUserVoDTO commentUserVoDTO = new CommentUserVoDTO();
@@ -111,10 +117,34 @@ public class MessageService {
                 voDTO.setCreateTimeStr(sdf.format(voDTO.getCreateTime()));
             }
             voDTO.setCommentUserVoDTOS(commentUserVoDTOList);
+            voDTO.setPraiseNumber(praiseInfoList.size());
+            voDTO.setCommentNumber(commentUserVoList.size());
             messageVoDTOList.add(voDTO);
         }
         return RespBaseUtils.setResult(messageVoDTOList);
     }
 
+
+    /**
+     * 点赞
+     */
+    public RespBase<String> addPraise(PraiseInfoDTO praiseInfoDTO) {
+        RespBase<String> respBase = new RespBase<>();
+        PraiseInfo vo = new PraiseInfo();
+        BeanCopyUtils.copyProperties(praiseInfoDTO, vo);
+        List<PraiseInfo> praiseInfoList = praiseInfoRepository.findAllByUserIdAndMsgId(praiseInfoDTO.getUserId(), praiseInfoDTO.getMsgId());
+        if (praiseInfoList.size() > 0) {
+            throw new RuntimeException("请不要重复点赞！");
+        }
+        UserInfo userInfo = userInfoRepository.findOne(praiseInfoDTO.getUserId());
+        if (Objects.isNull(userInfo)) {
+            throw new RuntimeException("没有找到对应用户！");
+        }
+        vo.setUserName(userInfo.getNickName());
+        vo.setCreateTime(new Date());
+        praiseInfoRepository.save(vo);
+        respBase.setResult("success");
+        return respBase;
+    }
 
 }

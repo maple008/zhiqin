@@ -1,6 +1,7 @@
 package com.zhiqin.module.sql.repository;
 
 import com.zhiqin.module.sql.entity.CommentUserVo;
+import com.zhiqin.module.sql.entity.PraiseInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Created by maple on 2017/11/20.
  */
-public interface CommentUserRepository extends JpaRepository<CommentUserVo, Integer>, JpaSpecificationExecutor<CommentUserVo> {
-    List<CommentUserVo> findAllByMsgId(int msgId);
-    List<CommentUserVo> findAllByUserIdAndMsgId(int userId, int msgId);
+public interface PraiseInfoRepository extends JpaRepository<PraiseInfo, Integer>, JpaSpecificationExecutor<PraiseInfo> {
+    List<PraiseInfo> findAllByMsgId(int msgId);
+    List<PraiseInfo> findAllByUserIdAndMsgId(int userId,int msgId);
 }

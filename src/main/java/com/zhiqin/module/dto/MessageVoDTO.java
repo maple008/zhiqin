@@ -21,10 +21,31 @@ public class MessageVoDTO implements Serializable {
     private Date createTime;
     private String createTimeStr="";
     private List<CommentUserVoDTO> commentUserVoDTOS = new ArrayList<>();
+    /***
+     * 评论数量和点赞数量
+     */
+    private int commentNumber;//评论数量
+    private int praiseNumber;//点赞数量
     //页码
     private int pageIndex;
     //每页数量
     private int pageSize;
+
+    public int getCommentNumber() {
+        return commentNumber;
+    }
+
+    public void setCommentNumber(int commentNumber) {
+        this.commentNumber = commentNumber;
+    }
+
+    public int getPraiseNumber() {
+        return praiseNumber;
+    }
+
+    public void setPraiseNumber(int praiseNumber) {
+        this.praiseNumber = praiseNumber;
+    }
 
     public int getPageIndex() {
         return pageIndex;
